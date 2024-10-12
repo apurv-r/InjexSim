@@ -1,55 +1,13 @@
+{% extends 'FrontEnd/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}aaaaa {% endblock %}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-        }
-
-        header {
-            display: flex;
-            font: 15px sans-serif;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 10px;
-        }
-
-        .header-left h1 {
-            margin: 0;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 10px;
-        }
-
-        .header-right button {
-            background-color: white;
-            color: #333;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .header-right button:hover {
-            background-color: #ddd;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-left">
-            <h1>My really really interesting blog | @wsu_acm</h1>
-        </div>
-    </header>
-    <main>
-        {% block content %} {% endblock %}
-    </main>
-</body>
-</html>
+{% block content %}
+    <h1>Welcome to InjexSim</h1>
+    <p>
+        InjexSim is a simulation tool for SQL injection attacks. It allows you to create and run simulations of a SQLI attack on a closed local environment to visualize effects of SQL injection.
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login ></button>
+    </form>
+{% endblock %}

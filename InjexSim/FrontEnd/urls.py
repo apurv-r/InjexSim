@@ -5,4 +5,5 @@ app_name = 'FrontEnd'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('database/', views.database, name='database'),
 ]

@@ -1,0 +1,23 @@
+{% extends 'FrontEnd/base.html' %}
+
+{% block content %}
+
+    <h1>Database</h1>
+    <p>
+        This is the database page. Here you can view the database and its contents.
+    </p>
+
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Password</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.0 }}</td>
+                <td>{{ user.1 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
