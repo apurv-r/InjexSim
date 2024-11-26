@@ -2,5 +2,7 @@
 /Lib
 /pyvenv.cfg
 /Scripts
+__pycache__/**
 
-/InjexSim/InjexSimSite/__pycache__/
+db.sqlite3
+simDB.db
