@@ -1,0 +1,110 @@
+{% extends 'FrontEnd/base.html' %}
+
+{% block title %}
+<title>InjexSim | Mitigate</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Mitigations against SQL Injections</h1>
+    <p>
+        SQL Injection is one of the most common vulnerabilities in web applications, where an attacker can manipulate a query to execute malicious SQL commands. To mitigate these attacks, one of the most effective strategies is using <strong>prepared statements</strong> (or <strong>parameterized queries</strong>).
+    </p>
+
+    <br>
+    <h2>Why Prepared Statements Work</h2>
+    <p>
+        Prepared statements separate the SQL code from the data being passed into the query. This prevents an attacker from injecting malicious SQL because the database engine treats the inputs as data, not executable code. Here’s the key difference:
+    </p>
+
+    <div class="card my-3">
+        <div class="card-body">
+            <h3>Example of Vulnerable Code</h3>
+            <pre><code class="language-sql">
+# Vulnerable to SQL Injection
+user_input = "'; DROP TABLE Users; --"
+query = f"SELECT * FROM Users WHERE username = '{user_input}'"
+# This becomes:
+# SELECT * FROM Users WHERE username = ''; DROP TABLE Users; -- 
+            </code></pre>
+            <p>
+                In the above code, the input directly modifies the SQL query, allowing attackers to inject commands. If executed, the entire <code>Users</code> table could be <strong>deleted</strong>!
+            </p>
+        </div>
+    </div>
+
+    <div class="card my-3">
+        <div class="card-body">
+            <h3>Example of Secure Code Using Prepared Statements</h3>
+            <pre><code class="language-sql">
+# Safe against SQL Injection
+user_input = "'; DROP TABLE Users; --"
+query = "SELECT * FROM Users WHERE username = ?"
+prepared_statement = db.prepare(query)
+prepared_statement.execute(user_input)
+# The database engine knows that user_input is data, not SQL.
+            </code></pre>
+            <p>
+                The <code>?</code> (or a placeholder like <code>:username</code>) tells the database to expect data at that position. The user input is treated as a string literal, ensuring it cannot alter the query structure.<br>So, in the above example, the database will search for a username that matches <code>'; DROP TABLE Users; --</code> as a string, not as a command.
+            </p>
+        </div>
+    </div>
+
+    <br>
+    <h2>How to Implement Prepared Statements</h2>
+    <p>Below are examples of how to use prepared statements in python:</p>
+
+    <br>
+    <div class="card my-3">
+        <div class="card-body">
+            <h4>Python with SQLite</h4>
+            <pre><code class="language-python">
+import sqlite3
+
+# Connect to the database
+conn = sqlite3.connect('example.db')
+cursor = conn.cursor()
+
+# Unsafe query
+unsafe_query = f"SELECT * FROM Users WHERE username = '{user_input}'"
+
+# Safe query using prepared statements
+safe_query = "SELECT * FROM Users WHERE username = ?"
+cursor.execute(safe_query, (user_input,))
+
+# Fetch results
+results = cursor.fetchall()
+            </code></pre>
+        </div>
+    </div>
+
+    <br>
+    <h2>Key Benefits of Prepared Statements</h2>
+    <ul>
+        <li><strong>Prevents SQL Injection:</strong> User inputs are treated as data, not executable code.</li>
+        <li><strong>Improves Performance:</strong> In some databases, prepared statements are precompiled, reducing query execution time.</li>
+        <li><strong>Readability:</strong> Code becomes more organized and easier to maintain.</li>
+    </ul>
+
+    <br>
+
+    <h2>Other Mitigation Techniques</h2>
+    <p>
+        While prepared statements are the best way to prevent SQL injections, additional safeguards include:
+    </p>
+    <ul>
+        <li><strong>Input Validation:</strong> Ensure user inputs conform to expected formats (e.g., no special characters for usernames).</li>
+        <li><strong>Escaping Inputs:</strong> Use functions to escape special characters in queries (not as robust as prepared statements).</li>
+        <li><strong>Database Permissions:</strong> Limit database user permissions to reduce damage in case of a breach.</li>
+    </ul>
+
+    <p>Implementing these practices ensures your application is resilient against SQL injection attacks.</p>
+    
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+
+{% endblock %}

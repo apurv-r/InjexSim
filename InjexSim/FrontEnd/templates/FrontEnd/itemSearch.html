@@ -1,0 +1,164 @@
+{% extends 'FrontEnd/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+<title>InjexSim | ItemSearch</title>
+{% endblock %}
+
+{% block content %}
+<h1>Vulnerable Server Hosting Service</h1>
+<p>
+    Welcome to XYZ Hosting, a vulnerable server hosting service that is susceptible to SQL injection attacks. This page allows you to search for services available for your tier in their hosting service. It uses <code>ItemSearch</code> table to check for services. Try to exploit the SQL injection vulnerabilities to access unauthorized services. 
+</p>
+
+    <div class="d-flex justify-content-between mb-4">
+        <!-- User Level Toggle -->
+        <div class="form-check form-switch">
+            <label for="userLevelSelect" class="form-label">Select User Level:</label>
+            <select class="form-select" id="userLevelSelect" name="user_level" form="search-form">
+                <option value="guest" {% if selected_user_level == "guest" %}selected{% endif %}>Guest</option>
+                <option value="member" {% if selected_user_level == "member" %}selected{% endif %}>Member</option>
+                <option value="client" {% if selected_user_level == "client" %}selected{% endif %}>Client</option>
+                <option value="admin" {% if selected_user_level == "admin" %}selected{% endif %}>Admin</option>
+            </select>
+        </div>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="mitigationsSwitch" name="mitigations_switch" form="search-form">
+            <label class="form-check-label" for="flexSwitchCheckChecked">Enable SQL Injection Mitigations</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="multipleQuerySwitch" name="multiple_query_switch" form="search-form" disabled>
+            <label class="form-check-label " for="flexSwitchCheckChecked">Allow Multiple SQL queries in one (inactive)</label>
+        </div>
+    </div>
+
+    <!-- Accordion for Live SQL Query -->
+    <div class="accordion mt-3" id="sqlAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Live SQL Query View (vulnerable)
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#sqlAccordion">
+                <div class="accordion-body">
+                    <pre><code id="liveSqlQuery">SELECT name, permissionLevel FROM ItemSearch WHERE name LIKE '%[searchQuery]%' AND permissionLevel = '[userLevel]';</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card macos-card rounded shadow-lg" style="width: 30vw;">
+            <!-- macOS Window Header -->
+            <div class="card-header" style="border-bottom: none;">
+                <div class="d-flex align-items-center justify-content-start">
+                    <div class="rounded-circle bg-danger mx-1" style="width: 12px; height: 12px;"></div>
+                    <div class="rounded-circle bg-warning mx-1" style="width: 12px; height: 12px;"></div>
+                    <div class="rounded-circle bg-success mx-1" style="width: 12px; height: 12px;"></div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4 fw-bold fs-3">XYZ Hosting</h5>
+                <p class="card-text text-center" id="form-message">Get the best hosting services with great uptime, high configurability and budget-friendly servers at XYZ Hosting. Check out our services below or buy one of our subscription memberships for more choices for servers.</p><br>
+                <form method="POST" id="search-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="sqlMitigationsInput" name="mitigationsSwitchValue" value="off">
+                    <input type="hidden" id="multipleQueryInput" name="multipleQuerySwitchValue" value="off">
+                    <input type="hidden" id="userLevelInput" name="userPermissionLevel" name="user_level" value="guest">
+                    {% bootstrap_form form %}
+                    <div class="d-grid">
+                        {% bootstrap_button button_type="submit" content="Search" %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            {% if results|length >= 0 %}
+                <div id="resultsSection" class="container mt-5">
+                    <div class="container mt-5">
+                        <h5>Search Results:</h5>
+                        <ul id="searchResults" class="list-group">
+                            {% if results|length > 0 %}
+                                {% for result in results %}
+                                    <li class="list-group-item">
+                                        {{ result.0 }} - <span class="text-secondary">Available for {{ result.1 }}</span>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="list-group-item text-danger">No items found or invalid query.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            <br>
+        </div>
+    </div>
+
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+
+    <style>
+        .macos-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .macos-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // User Level Toggle
+    const userLevelSelect = document.getElementById('userLevelSelect');
+    const userLevelInput = document.getElementById('userLevelInput');
+
+    userLevelSelect.addEventListener('change', () => {
+        userLevelInput.value = userLevelSelect.value;
+    });
+
+    userLevelInput.value = userLevelSelect.value;
+
+    // Mitigations switch
+    const toggleSwitch = document.getElementById('mitigationsSwitch');
+    const hiddenInput = document.getElementById('sqlMitigationsInput');
+
+    toggleSwitch.addEventListener('change', () => {
+        hiddenInput.value = toggleSwitch.checked ? 'on' : 'off';
+    });
+
+    // Multiple Query switch
+    const multipleQuerySwitch = document.getElementById('multipleQuerySwitch');
+    const multipleQueryInput = document.getElementById('multipleQueryInput');
+    
+    multipleQuerySwitch.addEventListener('change', () => {
+        multipleQueryInput.value = multipleQuerySwitch.checked ? 'on' : 'off';
+    });
+
+    // Live SQL Query Update
+    const query = document.querySelector('[name="search"]');
+    const liveSqlQueryElement = document.getElementById('liveSqlQuery');
+
+    function updateLiveSqlQuery() {
+        const queryField = query.value || '<span style="color: gray;">[searchQuery]</span>';
+        const userLevelField = userLevelSelect.value;
+        liveSqlQueryElement.innerHTML = `SELECT name, permissionLevel FROM ItemSearch WHERE name LIKE '%${queryField}%' AND permissionLevel = '${userLevelField}';`;
+    }
+
+    query.addEventListener('input', updateLiveSqlQuery);
+    userLevelSelect.addEventListener('change', updateLiveSqlQuery);
+
+    // Initialize live SQL query view
+    updateLiveSqlQuery();
+</script>
+{% endblock %}

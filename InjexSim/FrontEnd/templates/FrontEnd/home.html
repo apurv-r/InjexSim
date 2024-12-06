@@ -1,46 +1,61 @@
 {% extends 'FrontEnd/base.html' %}
 {% load django_bootstrap5 %}
 
+{% block title %}
+<title>InjexSim | Home</title>
+{% endblock %}
+
 {% block content %}
-    <h1>Welcome to InjexSim</h1>
-    <p>
-        InjexSim is a simulation tool for SQL injection attacks. It allows you to create and run simulations of a SQLI attack on a closed local environment to visualize effects of SQL injection.
-    </p>
-    <div class="container mt-5 d-flex justify-content-center">
-        <div class="card macos-card rounded shadow-lg" style="width: 25vw;">
-            <!-- macOS Window Header -->
-            <div class="card-header" style="border-bottom: none;">
-                <div class="d-flex align-items-center justify-content-start">
-                    <div class="rounded-circle bg-danger mx-1" style="width: 12px; height: 12px;"></div>
-                    <div class="rounded-circle bg-warning mx-1" style="width: 12px; height: 12px;"></div>
-                    <div class="rounded-circle bg-success mx-1" style="width: 12px; height: 12px;"></div>
-                </div>
-            </div>
-    
-            <!-- Login Form -->
-            <div class="card-body">
-                <h5 class="card-title text-center mb-4">Bank Login Portal</h5>
-                <p class="card-text text-center">At ABC Bank, we REALLY value your security, and with our flawless authentication system, you can sleep well knowing your account and money is safe with us.<br><br>Please login below.</p>
-                <form method="POST">
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    <br>
-                    <div class="d-grid">
-                        {% bootstrap_button button_type="submit" content="Login" %}
-                    </div>
-                </form>
-            </div>
+    <style>
+        shadowww {
+            text-shadow: 8px 8px 20px rgb(0, 0, 0);
+        }
+        img {
+            filter: blur(1.5px);
+            transform: scale(1.1)
+        }
+    </style>
+
+
+    <div class="position-relative overflow-hidden text-center bg-light" style="height: 400px;">
+        <img src="https://images.newscientist.com/wp-content/uploads/2024/05/07141222/SEI_203029555.jpg" class="w-100 h-100 object-fit-cover" alt="InjexSim Banner">
+        <div class="position-absolute top-50 start-50 translate-middle text-white text-shadow-lg">
+            <h1 class="display-2 fw-bold shadowww">InjexSim</h1>
+            <p class="fs-4 shadowww shadow-lg">Master SQL Injection in a Safe and Controlled Environment</p>
         </div>
     </div>
 
-    <style>
-        .macos-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-    
-        .macos-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    <br>
+    <h1>Home</h1>
+    <p>
+        Welcome to InjexSim, a simulated environment for practicing SQL injection attacks. This web application contains multiple scenarios where you can test your skills and learn how to mitigate SQL injection vulnerabilities.
+    </p>
+
+    <br>
+    <h2>Test Scenarios</h2>
+    <p>
+        Choose from the following test scenarios to practice SQL injection attacks:
+    </p>
+
+    <div class="list-group mt-3">
+        <a href="/loginPage" class="list-group-item list-group-item-action">Login Page</a>
+        <a href="/itemSearch" class="list-group-item list-group-item-action">Item Search</a>
+    </div>
+
+    <br>
+    <br>
+    <h2>Database View</h2>
+    <p>
+        View the database structure to understand how the tables are set up for each scenario.
+    </p>
+    <a href="/database" class="btn btn-primary">View Database</a>
+
+    <br>
+    <br>
+    <br>
+    <h2>How to Mitigate SQL Injection</h2>
+    <p>
+        Learn how to prevent SQL injection attacks by implementing prepared statements.
+    </p>
+    <a href="/mitigate" class="btn btn-primary">Learn More</a>
 {% endblock %}

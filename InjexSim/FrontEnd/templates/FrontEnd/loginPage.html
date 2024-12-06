@@ -1,0 +1,150 @@
+{% extends 'FrontEnd/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+<title>InjexSim | LoginPage</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Vulnerable Bank Login Portal</h1>
+    <p>
+        Welcome to the ABC Bank login portal. This is a vulnerable login page that is susceptible to SQL injection attacks. It uses the <code>UserLogin</code> table to authenticate users. Try to bypass the login system by exploiting SQL injection vulnerabilities.
+    </p>
+
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="mitigationsSwitch" name="mitigations_switch" form="login-form">
+        <label class="form-check-label" for="flexSwitchCheckChecked">Enable SQL Injection Mitigations</label>
+    </div>
+
+    <!-- Accordion for Live SQL Query -->
+    <div class="accordion mt-3" id="sqlAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Live SQL Query View (vulnerable)
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#sqlAccordion">
+                <div class="accordion-body">
+                    <pre><code id="liveSqlQuery">SELECT * FROM UserLogin WHERE username = '[username]' AND password = '[password]';</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card macos-card rounded shadow-lg" style="width: 30vw;">
+            
+            <!-- macOS Window Header -->
+            <div class="card-header" style="border-bottom: none;">
+                <div class="d-flex align-items-center justify-content-start">
+                    <div class="rounded-circle bg-danger mx-1" style="width: 12px; height: 12px;"></div>
+                    <div class="rounded-circle bg-warning mx-1" style="width: 12px; height: 12px;"></div>
+                    <div class="rounded-circle bg-success mx-1" style="width: 12px; height: 12px;"></div>
+                </div>
+            </div>
+    
+            <!-- Login Form -->
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4 fw-bold fs-3">Bank Login Portal</h5>
+                <p class="card-text text-center" id="form-message">At ABC Bank, we REALLY value your security, and with our flawless authentication system, you can sleep well knowing your account and money is safe with us.<br><br>Please login below.</p>
+                <form method="POST" id="login-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="sqlMitigationsInput" name="mitigationsSwitchValue" value="off">
+                    {% bootstrap_form form %}
+                    <br>
+                    <div class="d-grid">
+                        {% bootstrap_button button_type="submit" content="Login" %}
+                    </div>
+                </form>
+                <p id="error-message" class="text-danger text-center mt-3" style="display: none;">Invalid login. Please try again.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Login Successful</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    🎉 Welcome back! You are now logged in.
+                </div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-secondary" href="/loginPage/" role="button">Return to Login</a>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+
+    <style>
+        .macos-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+    
+        .macos-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Check if the URL contains 'success=1'
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSuccess = urlParams.get('success') === '1';
+    const isError = urlParams.get('success') === '0';
+    
+    // Mitigations switch
+    const toggleSwitch = document.getElementById('mitigationsSwitch');
+    const hiddenInput = document.getElementById('sqlMitigationsInput');
+
+    toggleSwitch.addEventListener('change', () => {
+        hiddenInput.value = toggleSwitch.checked ? 'on' : 'off';
+    });
+
+    if (isSuccess) {
+        // Lock the form
+        const form = document.getElementById('login-form');
+        const message = document.getElementById('form-message');
+        form.innerHTML = ''; // Remove form
+        message.textContent = "Welcome back! You are now logged in.";
+        
+        // Show Bootstrap Modal
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+    } else if (isError) {
+        // Display error message
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.style.display = 'block';
+    }
+
+    // Live SQL Query Update
+    const usernameField = document.querySelector('[name="username"]');
+    const passwordField = document.querySelector('[name="password"]');
+    const liveSqlQueryElement = document.getElementById('liveSqlQuery');
+
+    function updateLiveSqlQuery() {
+        const username = usernameField.value || '<span style="color: gray;">[username]</span>';
+        const password = passwordField.value || '<span style="color: gray;">[password]</span>';
+
+        liveSqlQueryElement.innerHTML = `SELECT * FROM UserLogin WHERE username = '${username}' AND password = '${password}';`;
+    }
+
+    usernameField.addEventListener('input', updateLiveSqlQuery);
+    passwordField.addEventListener('input', updateLiveSqlQuery);
+
+    // Initialize live SQL query view
+    updateLiveSqlQuery();
+</script>
+{% endblock %}
