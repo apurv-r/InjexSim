@@ -5,6 +5,8 @@ InjexSim is a secure, interactive platform designed to educate developers about 
 
 Submitted as CptS 327 Final Project FA24.
 
+[Project Presentation & Demo (WSU login required)](https://emailwsu-my.sharepoint.com/:v:/g/personal/apurv_rane_wsu_edu/ETAKegCRcCNKrGeCEu0mViwBz2_Mr6VO27V8bzI4DM0bow?e=THAjDD&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
+
 ## Startup: 
 
 ```
